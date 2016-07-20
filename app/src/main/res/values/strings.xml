@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name" translatable="false">VirusComplete</string>
+
+    <!-- Main Menu items -->
+    <string name="submitfile">Scan file</string>
+    <string name="lookupfile">File Lookup</string>
+    <string name="netlookup">Scan URL</string>
+    <string name="title_activity_scan_url">Scan URL</string>
+
+    <string name="please_wait">Please wait&#8230;</string>
+
+</resources>
