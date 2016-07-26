@@ -1,6 +1,7 @@
 package aenadon.viruscomplete;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,21 +33,33 @@ public class URLDetectionAdapter extends ArrayAdapter<ShowResults.AvCheck> {
         holder.smallText = (TextView) convertView.findViewById(R.id.list_item_result_smalltext);
         holder.imageView = (ImageView) convertView.findViewById(R.id.list_item_result_icon);
 
-        holder.bigText.setText(values.get(position).name);
-        holder.smallText.setText(values.get(position).detection);
 
-        String detect = values.get(position).detection;
-        switch (detect) { // TODO XML Strings!
-            case "Safe":
-                holder.imageView.setImageResource(R.drawable.ic_check);
+        String avName = values.get(position).name;
+        String rating;
+        int imageRes;
+
+        int detect = values.get(position).detection;
+        switch (detect) {
+            case C.safe:
+                imageRes = R.drawable.ic_check;
+                rating = context.getString(R.string.safe);
                 break;
-            case "Unrated":
-                holder.imageView.setImageResource(R.drawable.ic_unrated);
+            case C.unrated:
+                imageRes = R.drawable.ic_unrated;
+                rating = context.getString(R.string.unrated);
                 break;
-            case "Unsafe":
-                holder.imageView.setImageResource(R.drawable.ic_warning);
+            case C.unsafe:
+                imageRes = R.drawable.ic_warning;
+                rating = context.getString(R.string.unsafe);
                 break;
+            default:
+                Log.e("URLDetectionAdapter", "AvCheck class: no int assigned");
+                return null;
         }
+        holder.bigText.setText(avName);
+        holder.smallText.setText(rating);
+        holder.imageView.setImageResource(imageRes);
+
         return convertView;
     }
 

@@ -60,7 +60,7 @@ public class MenuAdapter extends BaseAdapter {
     private Integer[] stringRes = {
             R.string.submitfile,
             R.string.lookupfile,
-            R.string.netlookup
+            R.string.title_activity_scan_url
     };
 
 }

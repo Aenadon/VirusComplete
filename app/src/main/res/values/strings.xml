@@ -4,10 +4,15 @@
     <!-- Main Menu items -->
     <string name="submitfile">Scan file</string>
     <string name="lookupfile">File Lookup</string>
-    <string name="netlookup">Scan URL</string>
     <string name="title_activity_scan_url">Scan URL</string>
 
     <string name="please_wait">Please wait&#8230;</string>
     <string name="title_activity_show_results">Scan results</string>
+
+    <!-- Report screen strings -->
+    <string name="safe">Safe</string>
+    <string name="unsafe">Unsafe</string>
+    <string name="unrated">Unrated</string>
+    <string name="detectCount" formatted="false">Detections: %d/%d</string>
 
 </resources>
