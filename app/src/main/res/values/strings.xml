@@ -8,5 +8,6 @@
     <string name="title_activity_scan_url">Scan URL</string>
 
     <string name="please_wait">Please wait&#8230;</string>
+    <string name="title_activity_show_results">Scan results</string>
 
 </resources>

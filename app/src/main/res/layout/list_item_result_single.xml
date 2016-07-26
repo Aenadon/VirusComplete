@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:id="@+id/list_item_result_single"
+    tools:ignore="HardcodedText">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_warning"
+        android:id="@+id/list_item_result_icon"
+        android:contentDescription=" "/>
+
+    <TextView
+        android:id="@+id/list_item_result_bigtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1234"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignTop="@+id/list_item_result_icon"
+        android:layout_toRightOf="@+id/list_item_result_icon"
+        android:layout_toEndOf="@+id/list_item_result_icon"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp">
+    </TextView>
+
+    <TextView
+        android:id="@+id/list_item_result_smalltext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1234"
+        android:layout_below="@+id/list_item_result_bigtext"
+        android:layout_alignLeft="@+id/list_item_result_bigtext"
+        android:layout_alignStart="@+id/list_item_result_bigtext">
+    </TextView>
+</RelativeLayout>
