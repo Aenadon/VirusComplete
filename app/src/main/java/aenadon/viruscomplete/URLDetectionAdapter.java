@@ -11,11 +11,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class URLDetectionAdapter extends ArrayAdapter<ShowResults.AvCheck> {
+public class URLDetectionAdapter extends ArrayAdapter<ScanURL.AvCheck> {
     private final Context context;
-    private final ArrayList<ShowResults.AvCheck> values;
+    private final ArrayList<ScanURL.AvCheck> values;
 
-    public URLDetectionAdapter(Context context, ArrayList<ShowResults.AvCheck> list) {
+    public URLDetectionAdapter(Context context, ArrayList<ScanURL.AvCheck> list) {
         super(context, -1, list);
         this.context = context;
         this.values = list;

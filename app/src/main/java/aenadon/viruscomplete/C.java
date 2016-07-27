@@ -6,4 +6,6 @@ public class C {
     public static final int safe = 1;
     public static final int unrated = 2;
 
+
+
 }

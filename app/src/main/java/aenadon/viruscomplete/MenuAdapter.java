@@ -45,7 +45,7 @@ public class MenuAdapter extends BaseAdapter {
             image.setImageResource(imageRes[position]);
 
         } else {
-            grid = (View) convertView;
+            grid = convertView;
         }
 
         return grid;
