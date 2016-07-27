@@ -24,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ScanURL extends AppCompatActivity{
+public class ScanURL extends AppCompatActivity {
 
     String apikey = BuildConfig.API_KEY;
     String urlToCheck;
@@ -42,7 +42,7 @@ public class ScanURL extends AppCompatActivity{
     }
 
     public void scanURL(View view) {
-        EditText editText = (EditText)findViewById(R.id.box_urlCheck);
+        EditText editText = (EditText) findViewById(R.id.box_urlCheck);
         urlToCheck = editText.getText().toString();
         retrieveReports(urlToCheck);
     }
@@ -77,7 +77,7 @@ public class ScanURL extends AppCompatActivity{
                 } else {
                     new AlertDialog.Builder(ScanURL.this)
                             .setTitle("Report available")
-                            .setMessage("The last scan of this website is from "+ results.getScan_date() +
+                            .setMessage("The last scan of this website is from " + results.getScan_date() +
                                     ". Do you want to scan again or view the report of the previous scan?")
                             .setPositiveButton("Scan again", new DialogInterface.OnClickListener() {
                                 @Override
@@ -141,7 +141,7 @@ public class ScanURL extends AppCompatActivity{
         ArrayList<AvCheck> unrateds = new ArrayList<>();
 
         Set<Map.Entry<String, JsonElement>> entries = jsonScans.entrySet(); //will return members of your object
-        for (Map.Entry<String, JsonElement> entry: entries) {
+        for (Map.Entry<String, JsonElement> entry : entries) {
             String result = entry.getValue().getAsJsonObject().get("result").getAsString();
             boolean detected = entry.getValue().getAsJsonObject().get("detected").getAsBoolean();
 
@@ -154,8 +154,12 @@ public class ScanURL extends AppCompatActivity{
             }
         }
         // sort each list and then add them together
-        Collections.sort(unsafes); Collections.sort(safes); Collections.sort(unrateds);
-        everythingTogether.addAll(unsafes); everythingTogether.addAll(safes); everythingTogether.addAll(unrateds);
+        Collections.sort(unsafes);
+        Collections.sort(safes);
+        Collections.sort(unrateds);
+        everythingTogether.addAll(unsafes);
+        everythingTogether.addAll(safes);
+        everythingTogether.addAll(unrateds);
 
         ListView list = (ListView) findViewById(R.id.list_urlScanResults); // inside R.layout.content_scan_url
         list.setAdapter(new URLDetectionAdapter(this, everythingTogether));
@@ -163,6 +167,7 @@ public class ScanURL extends AppCompatActivity{
         String detectionCount = String.format(getString(R.string.detectCount), scanResults.getPositives(), scanResults.getTotal());
         Toast.makeText(ScanURL.this, detectionCount, Toast.LENGTH_LONG).show();
     }
+
     public class AvCheck implements Comparable<AvCheck> { // Contains the results of the scan for passing them to the adapter
         String name;
         int detection;
@@ -171,73 +176,10 @@ public class ScanURL extends AppCompatActivity{
             this.name = name;
             this.detection = detection;
         }
+
         @Override
         public int compareTo(@NonNull AvCheck avCheck) {
             return this.name.compareTo(avCheck.name);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-  /*  public class getURLReport extends AsyncTask<String, Void, String> {
-
-        private ProgressDialog waitingDialog; // tells user to wait
-
-        @Override
-        protected void onPreExecute() {
-            waitingDialog = new ProgressDialog(ScanURL.this);
-            waitingDialog.setMessage(getString(R.string.please_wait));
-            waitingDialog.setIndeterminate(true);
-            waitingDialog.setCancelable(false);
-            waitingDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            FetchJSON fetchJSON = new FetchJSON(strings[0]); // the heavy lifting happens here
-            return fetchJSON.jsonResponse; // if jsonResponse is empty, null will be returned
-        }
-
-        // TODO ---> XML STRINGS!!! <---
-        @Override
-        protected void onPostExecute(final String response) {
-            if (response == null) return; // if response is null, cancel
-
-            // TODO remove this as soon as the feature works!!
-            if (response.equals("[]")) {
-                new AlertDialog.Builder(ScanURL.this)
-                        .setTitle("Broken API feature")
-                        .setMessage("The URL re-scanning API feature seems to be broken. Hopefully this will be fixed some time later.")
-                        .setPositiveButton("Cancel", null)
-                        .show();
-                return;
-            }
-
-            final JSONObject json;
-            try { // TODO lots of XML!
-                json = new JSONObject(response);
-                if (json.getInt("response_code") == -1) { // invalid URL
-
-                } else if (json.getString("verbose_msg").equals(scanQueuedMsg)) {
-
-                } else {
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } finally {
-                waitingDialog.dismiss();
-            }
-        }
-
-    } */
 }
