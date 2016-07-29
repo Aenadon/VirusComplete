@@ -10,40 +10,37 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="aenadon.viruscomplete.ScanURL"
-    tools:showIn="@layout/activity_scan_url">
+    tools:context=".ScanFileLookup"
+    tools:showIn="@layout/activity_scan_file_lookup">
 
     <EditText
-        android:id="@+id/box_urlCheck"
-        android:inputType="textUri"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/website_example"
-        android:text="@string/http_stub"/>
-
+        android:id="@+id/box_filehash"
+        android:maxLength="64"
+        android:hint="@string/hash_input_hint"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:weightSum="1">
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/get_url_report"
-            android:onClick="scanURL"
-            android:id="@+id/scan_url_get_report"
-            android:layout_weight="0.5"/>
+            android:text="@string/lookup_file"
+            android:layout_weight="0.5"
+            android:onClick="lookupHash" />
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/force_scan"
-            android:onClick="scanURL"
-            android:id="@+id/scan_url_force_scan"
-            android:layout_weight="0.5"/>
+            android:text="@string/paste_value"
+            android:layout_weight="0.5"
+            android:onClick="pasteValue" />
     </LinearLayout>
 
 
     <ListView
-        android:id="@+id/list_urlScanResults"
+        android:id="@+id/list_file_scan_lookup_results"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp" />

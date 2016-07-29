@@ -2,37 +2,37 @@
     <string name="app_name" translatable="false">VirusComplete</string>
 
     <!-- Main Menu items -->
-    <string name="submitfile">Scan file</string>
-    <string name="lookupfile">File Lookup</string>
-    <string name="title_activity_scan_url">Scan URL</string>
+    <string name="title_activity_file_scan_submit">Scan file</string>
+    <string name="title_activity_file_scan_lookup">Lookup file</string>
+    <string name="title_activity_url_scan">Scan URL</string>
 
     <!-- ScanURL Activity -->
-    <string name="http_stub">http://</string>
-    <string name="website_example">http://www.website.net</string>
-    <string name="check_url">Check URL</string>
+    <string name="http_stub" translatable="false">http://</string>
+    <string name="website_example" translatable="false">http://www.website.net</string>
+    <string name="get_url_report">Get URL report</string>
 
     <string name="invalid_url_title">Invalid URL</string>
     <string name="invalid_url_message">The URL you entered is invalid. Please delete any unnecessary characters and try again.</string>
     <string name="try_again">Try again</string>
 
     <string name="scan_queued_title">Scan queued</string>
-    <string name="scan_queued_message">The website is queued for scan. Come back in about a minute for the report.</string>
+    <string name="scan_queued_message">The website is queued for scan. Come back in a few seconds for the report.</string>
     <string name="scan_still_queued_message">The website is still queued. Please come back later.</string>
     <string name="come_back_later">Come back later</string>
 
-    <string name="report_available">Report available</string>
-    <string name="last_scan_question" formatted="false">The last scan of this website is from %s. Do you want to scan again or view the report of the previous scan?</string>
-    <string name="scan_again">Scan again</string>
-    <string name="view_report">View Report</string>
+    <string name="force_scan">Force new scan</string>
 
     <string name="data_error_title">Data error</string>
     <string name="data_error_message">Retrieving the data didn\'t work. Reason: </string>
-    <string name="data_error_message_forcescan">Sending the \"scan\" command didn\'t work. Reason: </string>
+    <string name="data_error_message_forcescan">Sending the \"scan\" command didn\'t work. Reason:\ </string> <!--Reason:\  the space character needs to be escaped "\ "-->
     <string name="sorry">Sorry!</string>
+
+    <string name="get_report_first">Please retrieve a report before you request a rescan.</string>
 
     <string name="please_wait">Please wait&#8230;</string>
 
     <!-- Report screen strings -->
+    <string name="scan_date_text" formatted="false">Scan date: %s\nDetections: %d/%d</string>
     <string name="safe">Safe</string>
     <string name="unsafe">Unsafe</string>
     <string name="unrated">Unrated</string>
@@ -44,6 +44,28 @@
     <string name="not_permitted_title">Not permitted</string>
     <string name="not_permitted_message">This API call is not permitted. This means that this function you tried to use doesn\'t work, please contact the developer in order to remove it.</string>
     <string name="leave">Leave</string>
+    <string name="strange_error_title">Strange error occurred</string>
+    <string name="strange_error_message">Some strange unknown error happened on the VirusTotal API side. Please try again.</string>
 
+    <!-- ScanFileLookup Activity -->
+    <string name="hash_input_hint">Enter a md5/sha1/sha256 hash</string>
+    <string name="lookup_file">Lookup file</string>
+    <string name="res_not_found_title">Resource not found</string>
+    <string name="res_not_found_message">The resource you requested is not in the VirusTotal Database.
+    Make sure that you typed/pasted the correct code. If this message appears again, please upload the
+    file to virustotal.com and retrieve its report later.</string>
+    <string name="paste_value">Paste value</string>
+    <string name="title_activity_scan_file_send">ScanFileSend</string>
+
+    <!-- ScanFileSend Activity -->
+    <string name="select_file_hint">Click here to choose a file</string>
+    <string name="error_select_file">Please select a file!</string>
+    <string name="permission_request_title">Storage permission required</string>
+    <string name="permission_request_message">In order to select a file, you must grant the permission to read
+        files from storage. Please select \"Allow\" in the following message box. You only need to do that once.</string>
+    <string name="permission_request_button">Proceed</string>
+    <string name="permission_granted_thanks">Thank you!</string>
+    <string name="permission_denied_title">Permission denied</string>
+    <string name="permission_denied_message">This function cannot work without this permission. Please try again and select \"Allow\".</string>
 
 </resources>

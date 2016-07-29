@@ -4,10 +4,11 @@ import com.google.gson.JsonElement;
 
 import java.io.Serializable;
 
-public class VirusTotalURLResponse implements Serializable {
+@SuppressWarnings("unused")
+public class VirusTotalResponse implements Serializable {
 
     private int response_code, total, positives;
-    private String scan_date, verbose_msg;
+    private String scan_date, verbose_msg; // if file scan is queued, response_code is 1, verbose_msg is null
     private JsonElement scans;
 
 
@@ -15,7 +16,7 @@ public class VirusTotalURLResponse implements Serializable {
         return response_code;
     }
 
-    public void setResponse_code(int response_code) {
+    public void setResponsex_code(int response_code) {
         this.response_code = response_code;
     }
 
@@ -59,14 +60,4 @@ public class VirusTotalURLResponse implements Serializable {
         this.scans = scans;
     }
 
-    @Override
-    public String toString() {
-        return "VirusTotalURLResponse{" +
-                "response_code=" + response_code +
-                ", total=" + total +
-                ", positives=" + positives +
-                ", scan_date='" + scan_date + '\'' +
-                ", verbose_msg='" + verbose_msg + '\'' +
-                '}';
-    }
 }
