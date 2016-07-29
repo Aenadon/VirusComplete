@@ -29,12 +29,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="aenadon.viruscomplete.MainActivity" />
         </activity>
-        <activity
-            android:name=".ShowResults"
-            android:label="@string/title_activity_show_results"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
     </application>
 
 </manifest>

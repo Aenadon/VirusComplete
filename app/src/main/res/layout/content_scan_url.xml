@@ -13,19 +13,18 @@
     tools:context="aenadon.viruscomplete.ScanURL"
     tools:showIn="@layout/activity_scan_url">
 
-    <!--TODO insert XML strings / make a neat design-->
     <EditText
         android:id="@+id/box_urlCheck"
         android:inputType="textUri"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="http://www.somewebsite.org"
-        android:text="http://"/>
+        android:hint="@string/website_example"
+        android:text="@string/http_stub"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Check URL"
+        android:text="@string/check_url"
         android:onClick="scanURL"/>
 
     <ListView

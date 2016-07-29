@@ -6,13 +6,44 @@
     <string name="lookupfile">File Lookup</string>
     <string name="title_activity_scan_url">Scan URL</string>
 
+    <!-- ScanURL Activity -->
+    <string name="http_stub">http://</string>
+    <string name="website_example">http://www.website.net</string>
+    <string name="check_url">Check URL</string>
+
+    <string name="invalid_url_title">Invalid URL</string>
+    <string name="invalid_url_message">The URL you entered is invalid. Please delete any unnecessary characters and try again.</string>
+    <string name="try_again">Try again</string>
+
+    <string name="scan_queued_title">Scan queued</string>
+    <string name="scan_queued_message">The website is queued for scan. Come back in about a minute for the report.</string>
+    <string name="scan_still_queued_message">The website is still queued. Please come back later.</string>
+    <string name="come_back_later">Come back later</string>
+
+    <string name="report_available">Report available</string>
+    <string name="last_scan_question" formatted="false">The last scan of this website is from %s. Do you want to scan again or view the report of the previous scan?</string>
+    <string name="scan_again">Scan again</string>
+    <string name="view_report">View Report</string>
+
+    <string name="data_error_title">Data error</string>
+    <string name="data_error_message">Retrieving the data didn\'t work. Reason: </string>
+    <string name="data_error_message_forcescan">Sending the \"scan\" command didn\'t work. Reason: </string>
+    <string name="sorry">Sorry!</string>
+
     <string name="please_wait">Please wait&#8230;</string>
-    <string name="title_activity_show_results">Scan results</string>
 
     <!-- Report screen strings -->
     <string name="safe">Safe</string>
     <string name="unsafe">Unsafe</string>
     <string name="unrated">Unrated</string>
-    <string name="detectCount" formatted="false">Detections: %d/%d</string>
+    <string name="detect_count" formatted="false">Detections: %d/%d</string>
+
+    <!-- General error messages -->
+    <string name="api_limit_exceeded_title">API limit exceeded</string>
+    <string name="api_limit_exceeded_message">Request limit exceeded - you can only make 4 requests per minute. Wait a few seconds and try again.</string>
+    <string name="not_permitted_title">Not permitted</string>
+    <string name="not_permitted_message">This API call is not permitted. This means that this function you tried to use doesn\'t work, please contact the developer in order to remove it.</string>
+    <string name="leave">Leave</string>
+
 
 </resources>
