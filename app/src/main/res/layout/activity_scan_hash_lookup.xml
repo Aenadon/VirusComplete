@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ScanFileLookup">
+    tools:context=".ScanHashLookup">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,6 +21,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_scan_file_lookup" />
+    <include layout="@layout/content_scan_hash_lookup" />
 
 </android.support.design.widget.CoordinatorLayout>

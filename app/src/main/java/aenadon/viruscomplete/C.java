@@ -1,72 +1,168 @@
 package aenadon.viruscomplete;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.widget.ListView;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.apache.commons.codec.binary.Hex;
+
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.MessageDigest;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
-public class C {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+class C {
+
+   /*********************************************
+    * This class is for common constants and    *
+    * functions used throughout the activities. *
+    *********************************************/
+
+    // only used in ScanURL (for categorizing results)
     public static final int unsafe = 0;
     public static final int safe = 1;
     public static final int unrated = 2;
 
+    // only used in ScanFileSend for requesting file access
     public static final int REQUEST_FILE_ACCESS = 2;
-    public static final int ACTIVITY_CHOOSE_FILE = 3;
 
+    // every scan class uses this
     public static void errorCheck(int responseCode, Context ctx) {
         switch (responseCode) {
             case 204:
-                new AlertDialog.Builder(ctx)
-                        .setTitle(ctx.getString(R.string.api_limit_exceeded_title))
-                        .setMessage(ctx.getString(R.string.api_limit_exceeded_message))
-                        .setPositiveButton(ctx.getString(R.string.come_back_later), null)
-                        .show();
+                AlertDialogs.apiLimitExceeded(ctx);
                 break;
             case 403: // This shouldn't ever happen, but, just in case...
-                new AlertDialog.Builder(ctx)
-                        .setTitle(ctx.getString(R.string.not_permitted_title))
-                        .setMessage(ctx.getString(R.string.not_permitted_message))
-                        .setPositiveButton(ctx.getString(R.string.leave), null)
-                        .show();
+                AlertDialogs.notPermitted403(ctx);
+                break;
+            case 500:
+                AlertDialogs.serverError(ctx);
+                break;
+            default:
+                AlertDialogs.strangeError(ctx);
                 break;
         }
     }
 
-    // ### http://stackoverflow.com/questions/13152736/how-to-generate-an-md5-checksum-for-a-file-in-android/16938703#16938703 ###
-    public static String getMD5(String filePath) {
+    // every scan class uses this
+    public static void displayResults(Context c, VirusTotalResponse scanResults, int listRef) {
+        JsonObject jsonScans = scanResults.getScans().getAsJsonObject();
 
-        // Get MD5 for the selected file
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(filePath);
-            byte[] buffer = new byte[1024];
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            int numRead = 0;
-            while (numRead != -1) {
-                numRead = inputStream.read(buffer);
-                if (numRead > 0)
-                    digest.update(buffer, 0, numRead);
+        ArrayList<AvCheck> everythingTogether = new ArrayList<>();
+        // we save each of them in their own list, sort them individually and then bring everythingTogether
+        ArrayList<AvCheck> unsafes = new ArrayList<>();
+        ArrayList<AvCheck> safes = new ArrayList<>();
+
+        Set<Map.Entry<String, JsonElement>> entries = jsonScans.entrySet(); //will return members of your object
+        for (Map.Entry<String, JsonElement> entry : entries) {
+            boolean isDetected = entry.getValue().getAsJsonObject().get("detected").getAsBoolean();
+            if (isDetected) {
+                String malwareName = entry.getValue().getAsJsonObject().get("result").getAsString();
+                unsafes.add(new AvCheck(entry.getKey(), malwareName, true));
+            } else {
+                safes.add(new AvCheck(entry.getKey(), null, true)); // safe --> "malware name" == null
             }
-            byte[] md5Bytes = digest.digest();
-            String returnVal = "";
-            for (byte md5Byte : md5Bytes) { returnVal += Integer.toString((md5Byte & 0xff) + 0x100, 16).substring(1); }
-            return returnVal;
-        } catch (Exception e) {
+        }
+        // sort each list
+        Collections.sort(unsafes);
+        Collections.sort(safes);
+
+        // first list row contains date and detections count, then add everything together
+        everythingTogether.add(new AvCheck(scanResults.getScan_date(), scanResults.getPositives(), scanResults.getTotal(), true));
+        everythingTogether.addAll(unsafes);
+        everythingTogether.addAll(safes);
+
+        ListView list = (ListView) ((Activity)c).findViewById(listRef);
+        list.setAdapter(new ResultListAdapter(c, everythingTogether));
+    }
+
+    public static String getSHA256(String filePath) {
+        // ### http://stackoverflow.com/a/2932513/3673616 -- see comment #4 ###
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(new File(filePath));
+            byte data[] = org.apache.commons.codec.digest.DigestUtils.sha256(fis);
+            char sha256chars[] = Hex.encodeHex(data);
+            return String.valueOf(sha256chars);
+        } catch (IOException e) {
             e.printStackTrace();
-            return "Error: Could not calculate MD5 value";
+            Log.e("SHA256-Calculation", e.getMessage());
+            return "";
         } finally {
-            if (inputStream != null) {
+            if (fis != null) {
                 try {
-                    inputStream.close();
-                } catch (Exception e) {
+                    fis.close();
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
+    // ScanFileSend + ScanHashLookup use that
+    public static void forceHashRescan(final Context ctx, String givenHash) {
+
+        final ProgressDialog waitingDialog = new ProgressDialog(ctx);
+        waitingDialog.setMessage(ctx.getString(R.string.please_wait));
+        waitingDialog.setIndeterminate(true);
+        waitingDialog.setCancelable(false);
+        waitingDialog.show();
+
+        RetrofitBase.getRetrofit().create(VirusTotalApiCalls.class).forceHashRescan(BuildConfig.API_KEY, givenHash).enqueue(new Callback<VirusTotalResponse>() {
+            @Override
+            public void onResponse(Call<VirusTotalResponse> call, Response<VirusTotalResponse> response) {
+                waitingDialog.dismiss();
+                if (response.code() == 204 || !response.isSuccessful()) {
+                    errorCheck(response.code(), ctx);
+                    return;
+                }
+                final VirusTotalResponse results = response.body();
+                // Normally, there is also error code 0 (file not in DB) -
+                // but as we only allow rescan if a report has already
+                // been retrieved, this case is impossible to achieve
+                if (results.getResponse_code() == -1) {
+                    AlertDialogs.strangeError(ctx);
+                } else {
+                    AlertDialogs.resourceIsQueued(ctx);
+                }
+            }
+            @Override
+            public void onFailure(Call<VirusTotalResponse> call, Throwable t) {
+                waitingDialog.dismiss();
+                AlertDialogs.onFailureMessage(ctx, t.getLocalizedMessage());
+            }
+        });
+    }
+
+    public static String getAdjustedDate(String initialDate) {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sourceDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // this is the source format we need to parse
+        sourceDateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // source date is UTC
+        String correctedDate = "";
+        try {
+            Date scanDate = sourceDateFormat.parse(initialDate);
+            correctedDate = DateFormat.getDateTimeInstance().format(scanDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return correctedDate;
+    }
 
 }

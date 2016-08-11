@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(context, ScanFileSend.class));
                         break;
                     case 1:
-                        startActivity(new Intent(context, ScanFileLookup.class));
+                        startActivity(new Intent(context, ScanHashLookup.class));
                         break;
                     case 2:
                         startActivity(new Intent(context, ScanURL.class));
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     // https://developer.android.com/guide/topics/ui/layout/gridview.html
     // https://www.learn2crack.com/2014/01/android-custom-gridview.html
 
-    public class MenuAdapter extends BaseAdapter {
+    class MenuAdapter extends BaseAdapter {
 
         private Context context;
 
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 R.drawable.ic_url_scan
         };
         private Integer[] stringRes = {
-                R.string.title_activity_file_scan_submit,
+                R.string.title_activity_file_scan_send,
                 R.string.title_activity_file_scan_lookup,
                 R.string.title_activity_url_scan
         };

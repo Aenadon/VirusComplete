@@ -2,7 +2,7 @@ package aenadon.viruscomplete;
 
 import android.support.annotation.NonNull;
 
-public class AvCheck implements Comparable<AvCheck> { // Contains the results of the scan for passing them to the adapter
+class AvCheck implements Comparable<AvCheck> { // Contains the results of the scan for passing them to the adapter
     // First row
     String date;
     int positives, total;

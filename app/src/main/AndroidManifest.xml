@@ -32,7 +32,7 @@
                 android:value="aenadon.viruscomplete.MainActivity" />
         </activity>
         <activity
-            android:name=".ScanFileLookup"
+            android:name=".ScanHashLookup"
             android:label="@string/title_activity_file_scan_lookup"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name=".ScanFileSend"
-            android:label="@string/title_activity_scan_file_send"
+            android:label="@string/title_activity_file_scan_send"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

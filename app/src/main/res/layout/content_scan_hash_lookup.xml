@@ -10,8 +10,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ScanFileLookup"
-    tools:showIn="@layout/activity_scan_file_lookup">
+    tools:context=".ScanHashLookup"
+    tools:showIn="@layout/activity_scan_hash_lookup">
 
     <EditText
         android:layout_width="match_parent"
@@ -26,21 +26,21 @@
         android:weightSum="1">
         <Button
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/lookup_file"
+            android:layout_height="match_parent"
+            android:text="@string/check_hash"
             android:layout_weight="0.5"
             android:onClick="lookupHash" />
         <Button
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/paste_value"
+            android:layout_height="match_parent"
+            android:text="@string/paste"
             android:layout_weight="0.5"
-            android:onClick="pasteValue" />
+            android:onClick="paste" />
     </LinearLayout>
 
 
     <ListView
-        android:id="@+id/list_file_scan_lookup_results"
+        android:id="@+id/list_file_hash_lookup_results"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp" />

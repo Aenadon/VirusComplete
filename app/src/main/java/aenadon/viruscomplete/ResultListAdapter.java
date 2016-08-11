@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
 
-public class ResultListAdapter extends ArrayAdapter<AvCheck> {
+class ResultListAdapter extends ArrayAdapter<AvCheck> {
     private final Context context;
     private final ArrayList<AvCheck> values;
+
+    private static final String LOG_TAG = ResultListAdapter.class.getName();
 
     public ResultListAdapter(Context context, ArrayList<AvCheck> list) {
         super(context, -1, list);
@@ -46,35 +44,31 @@ public class ResultListAdapter extends ArrayAdapter<AvCheck> {
 
         if (values.get(position).isFirstRow) {
 
+            // For the first row, we don't need those 2 layouts
             holder.smallText.setVisibility(View.GONE);
             holder.imageView.setVisibility(View.GONE);
 
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat sourceDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // this is the source format we need to parse
-            sourceDateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // source date is UTC
-
-            try {
-                Date scanDate = sourceDateFormat.parse(values.get(position).date);
-
-                String tempString = String.format(context.getString(R.string.scan_date_text),
-                        DateFormat.getDateTimeInstance().format(scanDate),
-                        values.get(position).positives,
-                        values.get(position).total);
-
-                SpannableString spanString = new SpannableString(tempString);
-                spanString.setSpan(new StyleSpan(Typeface.ITALIC), 0, spanString.length(), 0);
-                if (values.get(position).positives == 0) {
-                    spanString.setSpan(new ForegroundColorSpan(0xFF008800), spanString.length() - 5, spanString.length(), 0); // "00/99" --> 5 characters in
-                } else {
-                    spanString.setSpan(new ForegroundColorSpan(0xFF880000), spanString.length() - 5, spanString.length(), 0);
-                }
-                spanString.setSpan(new StyleSpan(Typeface.ITALIC), 0, spanString.length(), 0);
-
-
-                holder.bigText.setText(spanString);
-
-            } catch (ParseException e) {
-                e.printStackTrace();
+            String adjustedDate = C.getAdjustedDate(values.get(position).date);
+            if (adjustedDate.isEmpty()) {
+                Log.e(LOG_TAG, "Date parse error in C.getAdjustedDate(String initialDate)");
+                return null;
             }
+
+            String unstyledString = String.format(context.getString(R.string.scan_date_text),
+                    adjustedDate,
+                    values.get(position).positives,
+                    values.get(position).total);
+
+            SpannableString styledString = new SpannableString(unstyledString);
+            styledString.setSpan(new StyleSpan(Typeface.ITALIC), 0, styledString.length(), 0);
+            if (values.get(position).positives == 0) {
+                styledString.setSpan(new ForegroundColorSpan(0xFF008800), styledString.length() - 5, styledString.length(), 0); // "00/99" --> 5 characters in
+            } else {
+                styledString.setSpan(new ForegroundColorSpan(0xFF880000), styledString.length() - 5, styledString.length(), 0);
+            }
+            styledString.setSpan(new StyleSpan(Typeface.ITALIC), 0, styledString.length(), 0);
+            holder.bigText.setText(styledString);
+
         } else if (values.get(position).isFileScan) {
             String avName = values.get(position).name;
             String malwareName = values.get(position).malwareName;

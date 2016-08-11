@@ -18,14 +18,19 @@
         android:layout_height="wrap_content"
         android:id="@+id/selectFileBox"
         android:hint="@string/select_file_hint"
-        android:focusableInTouchMode="false"
+        android:focusable="false"
         android:onClick="pickFile"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get MD5 (for now)"
-        android:onClick="testChecksum"/>
+        android:text="@string/button_check_file"
+        android:onClick="checkForAvailableReport"/>
 
+    <ListView
+        android:id="@+id/list_file_scan_send_results"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp" />
 
 </LinearLayout>
