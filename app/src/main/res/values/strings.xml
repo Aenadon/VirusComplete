@@ -17,11 +17,11 @@
     <string name="empty_url">Please enter a URL first!</string>
 
     <string name="invalid_url_title">Invalid URL</string>
-    <string name="invalid_url_message">The URL you entered is invalid. Please delete any unnecessary characters and try again.</string>
+    <string name="invalid_url_regex_message">The URL you entered is invalid. Please delete any unnecessary characters and try again.</string>
+    <string name="invalid_url_response_message">The VirusTotal servers rejected your URL. Please check if the URL is valid.</string>
+    <string name="scanned_url">Scanned resource:</string> <!--Toasts the user what resource is actually scanned-->
 
-    <string name="scan_queued_title">Scan queued</string>
     <string name="urlscan_queued_message">The website is queued for scan. Come back in a few seconds for the report.</string>
-    <string name="scan_still_queued_message">The website is still queued. Please come back later.</string>
 
     <!-- Report screen strings -->
     <string name="scan_date_text" formatted="false">Scan date: %s\nDetections: %d/%d</string>
@@ -56,23 +56,23 @@
     <string name="button_check_file">Check file</string>
 
     <string name="file_unavailable_or_queued_title">File not in database</string>
-    <string name="file_unavailable_or_queued_message">The supplied file is not in the VirusTotal database !!OR!! still queued for scanning.
-        Press the "Upload file" button to upload the file. WARNING: If you have already uploaded the file successfully, DO NOT UPLOAD AGAIN!
-        Keep checking until a report is available!</string>
+    <string name="file_unavailable_or_queued_message">The supplied file is not in the VirusTotal database. Press the "Upload file" button to upload the file.</string>
     <string name="button_upload_file">Upload file</string>
     <string name="button_cancel">Cancel</string>
     <!-- We're not using android.R.string.cancel because if we would, it would translate into every language (even languages that don't have an app translation)-->
 
     <string name="file_hash_scan_queued_message">Your resource is queued for scan. The scan should normally finish in a few minutes (depending on server load). However,
-        if the servers are busy, the scan can take a few hours, so please be patient. WARNING: Until the scan is finished, checking for report will
-        still show the old report, so please do not request another scan!</string>
+        if the servers are busy, the scan can take a few hours, so please be patient.</string>
 
     <!-- Shared between all report-scan activities -->
     <string name="report_available_title">Report available</string>
-    <string name="report_available_message" formatted="false">The latest scan on this resource is from %s. Would you like to view this report or request a rescan?</string>
+    <string name="report_available_message" formatted="false">The latest scan on this resource is from %s (%d/%d detections). Would you like to view this report or request a rescan?</string>
     <string name="button_report_available_newscan">Request new scan</string>
     <string name="button_report_available_viewold">View latest report</string>
     <string name="please_wait">Please wait&#8230;</string>
+
+    <string name="scan_queued_title">Scan queued</string>
+    <string name="scan_still_queued_message">The resource is still queued. Please come back later.</string>
 
     <!-- Shared button strings -->
     <string name="try_again">Try again</string>
@@ -82,10 +82,10 @@
 
     <!-- General error messages -->
     <string name="api_limit_exceeded_title">API limit exceeded</string>
-    <string name="api_limit_exceeded_message">Request limit exceeded - you can only make 4 requests per minute. Wait a few seconds and try again.</string>
+    <string name="api_limit_exceeded_message">Request limit exceeded - you can only make 4 requests per 60 seconds. Wait a few seconds and try again.</string>
 
-    <string name="not_permitted_title">Not permitted</string>
-    <string name="not_permitted_message">This API call is not permitted. This means that this function you tried to use doesn\'t work, please contact the developer in order to remove it.</string>
+    <string name="not_permitted_title">Not permitted</string>                                                   <!--Should never happen!-->
+    <string name="not_permitted_message">This API call is not permitted. Please contact the developer.</string> <!--Should never happen!-->
 
     <string name="strange_error_title">Strange error occurred</string>
     <string name="strange_error_message">Some strange unknown error happened on the VirusTotal API side. Please try again.</string>

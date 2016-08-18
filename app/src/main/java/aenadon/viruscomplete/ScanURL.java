@@ -3,11 +3,13 @@ package aenadon.viruscomplete;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,11 +32,15 @@ import retrofit2.Response;
 
 public class ScanURL extends AppCompatActivity {
 
+    private String LOG_TAG = ScanURL.class.getName();
+
     private String apikey = BuildConfig.API_KEY;
     private String urlToCheck;
     private ProgressDialog waitingDialog;
 
     private EditText textbox;
+
+    private SharedPreferences pendingScans;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +59,8 @@ public class ScanURL extends AppCompatActivity {
 
         textbox = (EditText) findViewById(R.id.box_urlCheck);
 
+        pendingScans = getSharedPreferences(C.queuedResources, Context.MODE_PRIVATE);
+
     }
 
     public void paste(View view) {
@@ -65,17 +75,31 @@ public class ScanURL extends AppCompatActivity {
     }
 
     public void scanURL(View view) {
+        String enteredUrl = textbox.getText().toString();
+        if (enteredUrl.equals("http://") || enteredUrl.trim().isEmpty()) { // no input - no scan
+            Toast.makeText(this, getString(R.string.empty_url), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Regex check: only extract valid url (if available), if not: tell the user and cancel
+        String regex = "(https?:\\/\\/)?\\w+(\\.\\w+)+(\\/\\S+)*";
+        Pattern regexPattern = Pattern.compile(regex);
+        Matcher urlMatcher = regexPattern.matcher(enteredUrl);
+        if (urlMatcher.find()) {
+            urlToCheck = enteredUrl.substring(urlMatcher.start(), urlMatcher.end()); // we only use the valid part of the url (if there is)
+            Toast.makeText(this, getString(R.string.scanned_url) + " " + urlToCheck, Toast.LENGTH_LONG).show(); // let the user check if the URL was matched correctly
+        } else {
+            AlertDialogs.invalidURLRegex(this);
+            return;
+        }
+
+
 
         // close the keyboard
         View v = this.getCurrentFocus();
         if (v != null) {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-        urlToCheck = textbox.getText().toString();
-        if (urlToCheck.equals("http://") || urlToCheck.trim().isEmpty()) { // no input - no scan
-            Toast.makeText(this, getString(R.string.empty_url), Toast.LENGTH_LONG).show();
-            return;
         }
 
         waitingDialog.show(); // show a "please wait" dialog and retrieve the latest existing report
@@ -85,20 +109,23 @@ public class ScanURL extends AppCompatActivity {
             public void onResponse(Call<VirusTotalResponse> call, Response<VirusTotalResponse> response) {
                 waitingDialog.dismiss(); // dismiss the waiting dialog before showing the results
                 if (response.code() == 204 || !response.isSuccessful()) {
+                    Log.d(LOG_TAG, "Response code: " + response.code());
                     C.errorCheck(response.code(), ScanURL.this);
                     return; // we show the error message before, then we interrupt the task
                 }
                 final VirusTotalResponse results = response.body();
+
                 if (results.getResponse_code() == -1) {
-                    AlertDialogs.invalidURL(ScanURL.this);
-                } else if (results.getResponse_code() == -2) {
-                    AlertDialogs.urlScanStillQueued(ScanURL.this);
+                    AlertDialogs.invalidURLResponse(ScanURL.this);
+                } else if (results.getResponse_code() == -2) { // API never returns -2, so we need to do that manually like in ScanFileSend/ScanHashLookup
+                    AlertDialogs.resourceStillQueued(ScanURL.this);
                 } else if (results.getResponse_code() == 0) { // no scan available, force scan
                     forceScan(urlToCheck);
                 } else {
 
                     String title = getString(R.string.report_available_title);
-                    String message = String.format(getString(R.string.report_available_message), C.getAdjustedDate(results.getScan_date()));
+                    String message = String.format(getString(R.string.report_available_message), C.getAdjustedDate(results.getScan_date()),
+                            results.getPositives(), results.getTotal());
                     String positiveButton = getString(R.string.button_report_available_newscan);
                     String negativeButton = getString(R.string.button_report_available_viewold);
 
@@ -131,7 +158,8 @@ public class ScanURL extends AppCompatActivity {
     }
 
     // Private access, only called if user wants to scan again through the result dialog
-    private void forceScan(String urlToCheck) {
+    private void forceScan(final String urlToCheck) {
+        waitingDialog.show();
         RetrofitBase.getRetrofit().create(VirusTotalApiCalls.class).forceURLRescan(apikey, urlToCheck).enqueue(new Callback<VirusTotalResponse>() {
             @Override
             public void onResponse(Call<VirusTotalResponse> call, Response<VirusTotalResponse> response) {
@@ -143,7 +171,7 @@ public class ScanURL extends AppCompatActivity {
                 // Unfortunately, the "report" function does not report invalid URLs,
                 // so an invalid URL consumes 2 API calls (report --> not in database, scan --> invalid URL)
                 if (response.body().getResponse_code() == -1) {
-                    AlertDialogs.invalidURL(ScanURL.this);
+                    AlertDialogs.invalidURLResponse(ScanURL.this);
                 } else {
                     AlertDialogs.urlIsQueued(ScanURL.this); // success!
                 }

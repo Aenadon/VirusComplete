@@ -1,8 +1,10 @@
 package aenadon.viruscomplete;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,14 +34,16 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-
+@SuppressLint("HandlerLeak")
 public class ScanFileSend extends AppCompatActivity {
 
     private EditText selectFileBox;
     private ProgressDialog waitingDialog;
     private String pathOfFileToCheck;
     private String apikey = BuildConfig.API_KEY;
-    okhttp3.Response sendResponse; // only needed in the upload-thread
+    private okhttp3.Response sendResponse; // only needed in the upload-thread
+
+    private SharedPreferences pendingScans;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,9 @@ public class ScanFileSend extends AppCompatActivity {
         waitingDialog.setMessage(getString(R.string.please_wait));
         waitingDialog.setIndeterminate(true);
         waitingDialog.setCancelable(false);
+
+        pendingScans = getSharedPreferences(C.queuedResources, MODE_PRIVATE);
+
     }
 
     // CALLED WHEN TOUCHING THE EDITTEXT
@@ -145,6 +152,17 @@ public class ScanFileSend extends AppCompatActivity {
                     return; // we show the error message before, then we interrupt the task
                 }
                 final VirusTotalResponse results = response.body();
+
+                // If the scan is among the queued AND the scan date is still the same (=scan not finished)...
+                if (pendingScans.contains(sha256hash)) {
+                    String lastScan = pendingScans.getString(sha256hash, "");
+                    if (lastScan.equals(results.getScan_date()) || results.getScan_date() == null) {
+                        AlertDialogs.resourceStillQueued(ScanFileSend.this); // tell the user the scan is still pending
+                        return; // and then exit
+                    }
+                }
+
+
                 if (results.getResponse_code() == -1) {
                     AlertDialogs.strangeError(ScanFileSend.this);
                 } else if (results.getResponse_code() == 0) { // File not in DB !!OR!! queued
@@ -160,7 +178,7 @@ public class ScanFileSend extends AppCompatActivity {
                             .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    upload(pathOfFileToCheck);
+                                    upload(pathOfFileToCheck, sha256hash);
                                 }
                             })
                             .setNegativeButton(negativeButton, null) // why not android.R.string.cancel? Because it would translate even to languages with no app-translation available.
@@ -168,7 +186,8 @@ public class ScanFileSend extends AppCompatActivity {
                 } else { // Report available
 
                     String title = getString(R.string.report_available_title);
-                    String message = String.format(getString(R.string.report_available_message), C.getAdjustedDate(results.getScan_date()));
+                    String message = String.format(getString(R.string.report_available_message), C.getAdjustedDate(results.getScan_date()),
+                            results.getPositives(), results.getTotal());
                     String positiveButton = getString(R.string.button_report_available_newscan);
                     String negativeButton = getString(R.string.button_report_available_viewold);
 
@@ -178,7 +197,7 @@ public class ScanFileSend extends AppCompatActivity {
                             .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    C.forceHashRescan(ScanFileSend.this, sha256hash); // inside C because ScanHashLookup uses it too
+                                    C.forceHashRescan(ScanFileSend.this, sha256hash, results.getScan_date()); // inside C because ScanHashLookup uses it too
                                 }
                             })
                             .setNegativeButton(negativeButton, new DialogInterface.OnClickListener() {
@@ -199,7 +218,7 @@ public class ScanFileSend extends AppCompatActivity {
     }
 
     // CALLED WHEN THE UPLOAD FILE BUTTON IS PRESSED (from the result dialog after retrieving report)
-    private void upload(String filePath) {
+    private void upload(String filePath, final String fileHash) {
         waitingDialog.show();
 
         File fileReference = new File(filePath); // reference to file
@@ -229,6 +248,9 @@ public class ScanFileSend extends AppCompatActivity {
                     // We silently hope that successful response == successfully queued
                     // because the documentation states no other case
                     // https://www.virustotal.com/en/documentation/public-api/#scanning-files
+
+                    // Put the hash + last scan date into the sharedpreferences so we can tell the user if the scan is still pending.
+                    pendingScans.edit().putString(fileHash, C.noScanYet).apply();
                     AlertDialogs.resourceIsQueued(ScanFileSend.this);
                 }
 

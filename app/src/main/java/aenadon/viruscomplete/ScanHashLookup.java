@@ -3,6 +3,7 @@ package aenadon.viruscomplete;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -74,6 +75,14 @@ public class ScanHashLookup extends AppCompatActivity {
                     return; // we show the error message before, then we interrupt the task
                 }
                 final VirusTotalResponse results = response.body();
+
+                SharedPreferences pendingScans = getSharedPreferences(C.queuedResources, MODE_PRIVATE);
+                // If the scan is among the queued AND the scan date is still the same (=scan not finished)...
+                if (pendingScans.contains(hashToCheck) && pendingScans.getString(hashToCheck, "").equals(results.getScan_date()) ) {
+                    AlertDialogs.resourceStillQueued(ScanHashLookup.this); // tell the user the scan is still pending
+                    return; // and then exit
+                }
+
                 if (results.getResponse_code() == -1) {
                     AlertDialogs.strangeError(ScanHashLookup.this);
                 } else if (results.getResponse_code() == 0) {
@@ -84,7 +93,8 @@ public class ScanHashLookup extends AppCompatActivity {
                     }
                 } else {
                     String title = getString(R.string.report_available_title);
-                    String message = String.format(getString(R.string.report_available_message), C.getAdjustedDate(results.getScan_date()));
+                    String message = String.format(getString(R.string.report_available_message), C.getAdjustedDate(results.getScan_date()),
+                            results.getPositives(), results.getTotal());
                     String positiveButton = getString(R.string.button_report_available_newscan);
                     String negativeButton = getString(R.string.button_report_available_viewold);
 
@@ -94,7 +104,7 @@ public class ScanHashLookup extends AppCompatActivity {
                             .setPositiveButton(positiveButton, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    C.forceHashRescan(ScanHashLookup.this, hashToCheck); // inside C because ScanHashLookup uses it too
+                                    C.forceHashRescan(ScanHashLookup.this, hashToCheck, results.getScan_date()); // inside C because ScanHashLookup uses it too
                                 }
                             })
                             .setNegativeButton(negativeButton, new DialogInterface.OnClickListener() {

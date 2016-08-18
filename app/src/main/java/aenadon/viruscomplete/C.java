@@ -44,6 +44,10 @@ class C {
     // only used in ScanFileSend for requesting file access
     public static final int REQUEST_FILE_ACCESS = 2;
 
+    // Used for SharedPreferences recording queued scans
+    public static final String queuedResources = "queued_resources";
+    public static final String noScanYet = "no scan yet";
+
     // every scan class uses this
     public static void errorCheck(int responseCode, Context ctx) {
         switch (responseCode) {
@@ -118,7 +122,7 @@ class C {
     }
 
     // ScanFileSend + ScanHashLookup use that
-    public static void forceHashRescan(final Context ctx, String givenHash) {
+    public static void forceHashRescan(final Context ctx, final String givenHash, final String lastScanDate) {
 
         final ProgressDialog waitingDialog = new ProgressDialog(ctx);
         waitingDialog.setMessage(ctx.getString(R.string.please_wait));
@@ -141,6 +145,8 @@ class C {
                 if (results.getResponse_code() == -1) {
                     AlertDialogs.strangeError(ctx);
                 } else {
+                    // Put the hash + last scan date into the sharedpreferences so we can tell the user if the scan is still pending.
+                    ctx.getSharedPreferences(C.queuedResources, Context.MODE_PRIVATE).edit().putString(givenHash, lastScanDate).apply();
                     AlertDialogs.resourceIsQueued(ctx);
                 }
             }

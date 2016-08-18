@@ -1,12 +1,9 @@
 package aenadon.viruscomplete;
 
-import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 
 interface VirusTotalApiCalls {
 
@@ -26,8 +23,11 @@ interface VirusTotalApiCalls {
     @FormUrlEncoded
     Call<VirusTotalResponse> forceHashRescan(@Field("apikey") String apikey, @Field("resource") String resource);
 
+    /*
+Not needed:
     @POST("file/scan")
     @Multipart
     Call<VirusTotalResponse> sendFileForScan(@Part("request") MultipartBody file);
+    */
 
 }

@@ -30,14 +30,21 @@ class AlertDialogs {
                 ctx.getString(R.string.leave));
     }
 
-    public static void invalidURL(Context ctx) {
+    public static void invalidURLRegex(Context ctx) {
         createOneButtonBox(ctx,
                 ctx.getString(R.string.invalid_url_title),
-                ctx.getString(R.string.invalid_url_message),
+                ctx.getString(R.string.invalid_url_regex_message),
                 ctx.getString(R.string.try_again));
     }
 
-    public static void urlScanStillQueued(Context ctx) {
+    public static void invalidURLResponse(Context ctx) {
+        createOneButtonBox(ctx,
+                ctx.getString(R.string.invalid_url_title),
+                ctx.getString(R.string.invalid_url_response_message),
+                ctx.getString(R.string.try_again));
+    }
+
+    public static void resourceStillQueued(Context ctx) {
         createOneButtonBox(ctx,
                 ctx.getString(R.string.scan_queued_title),
                 ctx.getString(R.string.scan_still_queued_message),
@@ -68,7 +75,7 @@ class AlertDialogs {
     public static void onFailureMessage(Context ctx, String failureMessage) {
         createOneButtonBox(ctx,
                 ctx.getString(R.string.data_error_title),
-                ctx.getString(R.string.data_error_message) + failureMessage,
+                ctx.getString(R.string.data_error_message) + " " + failureMessage,
                 ctx.getString(R.string.sorry));
     }
 
